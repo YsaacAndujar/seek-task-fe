@@ -1,5 +1,4 @@
 import { Backdrop, CircularProgress } from '@mui/material';
-import React, { ReactNode } from 'react'
 import { useAppSelector } from 'store';
 
 export const Loading = () => {
