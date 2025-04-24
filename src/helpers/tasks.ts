@@ -20,3 +20,7 @@ export const updateTask = (id: string, task: ITask) => {
 export const postTask = (task: ITask) => {
     return axios.post(`/tasks`, task)
 }
+
+export const getTaskStats = () => {
+    return axios.get(`/tasks/stats`)
+}

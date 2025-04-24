@@ -3,6 +3,7 @@ import { LoadingContext } from "context/loading";
 import { getTasks } from "helpers/tasks";
 import { ITask } from "interfaces/tasks";
 import { useContext, useEffect, useState } from "react";
+import { getStatusName } from "utils/tasks";
 
 export const useTasksList = () => {
   const [tasks, setTasks] = useState<ITask[]>([])
@@ -27,14 +28,6 @@ export const useTasksList = () => {
 
   }
 
-  const getStatusName = (status: string) =>{
-    const names: Record<string, string> = {
-      'todo':'To Do',
-      'in_progress':'In Progress',
-      'done':'Done',
-    }
-    return names[status] || 'N/A'
-  }
   const columnsMd: TableProps<ITask>['columns'] = [
     {
       title: 'Title',
