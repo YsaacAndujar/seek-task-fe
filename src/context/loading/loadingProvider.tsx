@@ -1,21 +1,23 @@
-import { useState } from "react"
+import { useState } from "react";
 import { LoadingContext } from "./loadingContext";
-import { Spin } from "antd";
+import { Backdrop, CircularProgress } from "@mui/material";
 
-type LoadingContextProvider = {
-  children: React.ReactNode
-}
+type LoadingContextProviderProps = {
+  children: React.ReactNode;
+};
 
-export const LoadingContextProvider = ({ children }: LoadingContextProvider) => {
-  const [loading, setLoading] = useState<boolean>(false)
+export const LoadingContextProvider = ({ children }: LoadingContextProviderProps) => {
+  const [loading, setLoading] = useState<boolean>(false);
+
   return (
-    <LoadingContext.Provider value={{
-      loading,
-      setLoading
-    }}>
-      <Spin size="large" spinning={loading}>
-        {children}
-      </Spin>
+    <LoadingContext.Provider value={{ loading, setLoading }}>
+      {children}
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </LoadingContext.Provider>
-  )
-}
+  );
+};
