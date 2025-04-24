@@ -33,6 +33,7 @@ export const setupAxios = (): void => {
     );
 
     axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+    axios.defaults.headers.common['Content-Type'] = 'application/json';
     const token = localStorage.getItem("token") || sessionStorage.getItem("token");
     if (token) {
       axios.defaults.headers.Authorization = `Bearer ${token}`;
