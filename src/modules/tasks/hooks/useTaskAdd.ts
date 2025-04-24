@@ -1,25 +1,42 @@
-import { Form } from "antd";
+import { useContext } from "react";
 import { LoadingContext } from "context/loading";
 import { postTask } from "helpers/tasks";
 import { ITask } from "interfaces/tasks";
-import { useContext } from "react";
 import { showModal } from "utils/modal";
+import * as Yup from "yup";
+import { requiredMsg } from "utils/form";
 
 export const useTaskAdd = () => {
-    const [form] = Form.useForm();
-    const { setLoading } = useContext(LoadingContext)
+  const { setLoading } = useContext(LoadingContext);
 
-    const onSubmit = (values: ITask) => {
-        setLoading(true)
-        postTask(values)
-            .then(() => {
-                showModal({ title: 'Task added', text: 'Task added successfully', type: 'success' })
-                form.resetFields()
-            })
-            .finally(() => {
-                setLoading(false)
-            })
+  const initialValues = {
+    title: "",
+    description: "",
+    status: "todo"
+  };
+
+  const validationSchema = Yup.object({
+    title: Yup.string().required(requiredMsg),
+    description: Yup.string().required(requiredMsg),
+    status: Yup.string().required(requiredMsg)
+  });
+
+  const onSubmit = async (values: any, { resetForm }: any) => {
+    try {
+      setLoading(true);
+      await postTask(values);
+      showModal({ title: "Task added", text: "Task added successfully", type: "success" });
+      resetForm();
+    } catch (error) {
+      console.error("Failed to add task", error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return { form, onSubmit }
-}
+  return {
+    initialValues,
+    validationSchema,
+    onSubmit
+  };
+};

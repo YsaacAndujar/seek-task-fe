@@ -1,42 +1,43 @@
-import { Button, Col, Form, Row, Typography } from "antd";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { Formik, Form } from "formik";
 import { useTaskAdd } from "../hooks/useTaskAdd";
 import { TaskValuesForm } from "../components/TaskValuesForm";
-const { Title, } = Typography;
 
 export const TaskAddScreen = () => {
-  const { form, onSubmit } = useTaskAdd()
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { initialValues, onSubmit, validationSchema } = useTaskAdd();
+
   return (
-    <>
-      <Title level={2}>Add</Title>
-      <Form
-        name="basic"
-        size="large"
-        form={form}
-        onFinish={onSubmit}
-        style={{ padding: '20px' }}
-        labelCol={{ span: 5, offset: 0 }}
-        initialValues={{status: 'todo'}}
+    <Box sx={{ maxWidth: 700, mx: "auto", mt: 4 }}>
+      <Typography variant="h4" gutterBottom>
+        Add Task
+      </Typography>
+
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
       >
-        <TaskValuesForm />
-        <Row justify="end" gutter={16} >
-          <Col>
-            <Form.Item>
-              <Button size="large" onClick={() => { navigate('/tasks') }}>
-                Cancel
-              </Button>
-            </Form.Item>
-          </Col>
-          <Col>
-            <Form.Item>
-              <Button type="primary" size="large" htmlType="submit">
-                Add
-              </Button>
-            </Form.Item>
-          </Col>
-        </Row>
-      </Form>
-    </>
-  )
-}
+        {() => (
+          <Form noValidate>
+            <TaskValuesForm />
+
+            <Grid container justifyContent="flex-end" spacing={2} sx={{ mt: 3 }}>
+              <Grid >
+                <Button size="large" onClick={() => navigate("/tasks")}>
+                  Cancel
+                </Button>
+              </Grid>
+              <Grid >
+                <Button type="submit" variant="contained" size="large">
+                  Add
+                </Button>
+              </Grid>
+            </Grid>
+          </Form>
+        )}
+      </Formik>
+    </Box>
+  );
+};

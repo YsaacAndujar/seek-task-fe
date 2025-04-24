@@ -1,79 +1,80 @@
-import { Button, Col, Form, Row, Typography } from "antd";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
+import { Formik, Form } from "formik";
 import { TaskValuesForm } from "../components/TaskValuesForm";
 import { useTaskDetails } from "../hooks/useTaskDetails";
-const { Title, } = Typography;
 
 export const TaskDetailsScreen = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
   if (!id) {
-    navigate('/tasks')
+    navigate("/tasks");
   }
-  const { task, form, isEdit, setIsEdit, onCancelEdit, onSubmit, onDeleteClick } = useTaskDetails(id || '0')
+
+  const {
+    task,
+    isEdit,
+    setIsEdit,
+    onSubmit,
+    onCancelEdit,
+    onDeleteClick,
+    validationSchema
+  } = useTaskDetails(id || "0");
 
   return (
-    <>
-      <Title level={2}>Details</Title>
-      <Form
-        name="basic"
-        size="large"
-        initialValues={task}
-        form={form}
-        onFinish={onSubmit}
-        style={{ padding: '20px' }}
-        labelCol={{ span: 5, offset: 0 }}
-      >
-        <TaskValuesForm isView={!isEdit} />
+    <Box sx={{ maxWidth: 700, mx: "auto", mt: 4 }}>
+      <Typography variant="h4" gutterBottom>
+        Task Details
+      </Typography>
 
-        <Row justify="end" gutter={16} >
-          {
-            !isEdit &&
-            <>
-              <Col>
-                <Form.Item>
-                  <Button size="large" danger onClick={onDeleteClick}>
-                    Delete
-                  </Button>
-                </Form.Item>
-              </Col>
-              <Col>
-                <Form.Item>
-                  <Button size="large" onClick={() => { navigate('/tasks') }}>
-                    Cancel
-                  </Button>
-                </Form.Item>
-              </Col>
-              <Col>
-                <Form.Item>
-                  <Button type="primary" size="large" onClick={() => setIsEdit(true)}>
-                    Edit
-                  </Button>
-                </Form.Item>
-              </Col>
-            </>
-          }
-          {
-            isEdit &&
-            <>
-              <Col>
-                <Form.Item>
-                  <Button size="large" htmlType="reset" onClick={onCancelEdit}>
-                    Cancel
-                  </Button>
-                </Form.Item>
-              </Col>
-              <Col>
-                <Form.Item>
-                  <Button type="primary" size="large" htmlType="submit">
-                    Save
-                  </Button>
-                </Form.Item>
-              </Col>
-            </>
-          }
-        </Row>
-      </Form>
-    </>
-  )
-}
+      <Formik
+        enableReinitialize
+        initialValues={task}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+      >
+        {() => (
+          <Form noValidate>
+            <TaskValuesForm isView={!isEdit} />
+
+            <Grid container justifyContent="flex-end" spacing={2} sx={{ mt: 3 }}>
+              {!isEdit ? (
+                <>
+                  <Grid >
+                    <Button size="large" color="error" onClick={onDeleteClick}>
+                      Delete
+                    </Button>
+                  </Grid>
+                  <Grid >
+                    <Button size="large" onClick={() => navigate("/tasks")}>
+                      Cancel
+                    </Button>
+                  </Grid>
+                  <Grid >
+                    <Button size="large" variant="contained" onClick={() => setIsEdit(true)}>
+                      Edit
+                    </Button>
+                  </Grid>
+                </>
+              ) : (
+                <>
+                  <Grid >
+                    <Button size="large" onClick={onCancelEdit}>
+                      Cancel
+                    </Button>
+                  </Grid>
+                  <Grid >
+                    <Button size="large" variant="contained" type="submit">
+                      Save
+                    </Button>
+                  </Grid>
+                </>
+              )}
+            </Grid>
+          </Form>
+        )}
+      </Formik>
+    </Box>
+  );
+};
