@@ -1,16 +1,16 @@
-import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { deleteTask, getTask, updateTask } from "helpers/tasks";
-import { ITask } from "interfaces/tasks";
-import { LoadingContext } from "context/loading";
-import { showModal } from "utils/modal";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "store";
+import { setLoading } from "store/loadingSlice";
 import Swal from "sweetalert2";
-import * as Yup from "yup";
 import { requiredMsg } from "utils/form";
+import { showModal } from "utils/modal";
+import * as Yup from "yup";
 
 export const useTaskDetails = (id: string) => {
   const navigate = useNavigate();
-  const { setLoading } = useContext(LoadingContext);
+  const dispatch = useAppDispatch()
 
   const [task, setTask] = useState({
     title: "",
@@ -21,7 +21,7 @@ export const useTaskDetails = (id: string) => {
   const [isEdit, setIsEdit] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
+    dispatch(setLoading(true));
     getTask(id)
       .then((result:any) => {
         setTask(result);
@@ -30,7 +30,7 @@ export const useTaskDetails = (id: string) => {
         navigate("/tasks");
       })
       .finally(() => {
-        setLoading(false);
+        dispatch(setLoading(false));
       });
   }, [id]);
 
@@ -39,7 +39,7 @@ export const useTaskDetails = (id: string) => {
   };
 
   const onSubmit = async (values: any) => {
-    setLoading(true);
+    dispatch(setLoading(true));
     try {
       await updateTask(id, values);
       showModal({ title: "Task edited", text: "Task edited successfully", type: "success" });
@@ -48,7 +48,7 @@ export const useTaskDetails = (id: string) => {
     } catch (error) {
       console.error("Error updating task:", error);
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
   };
 
@@ -69,14 +69,14 @@ export const useTaskDetails = (id: string) => {
   };
 
   const onDeleteTask = () => {
-    setLoading(true);
+    dispatch(setLoading(true));
     deleteTask(id)
       .then(() => {
         showModal({ title: "Task deleted", text: "Task deleted successfully", type: "success" });
         navigate("/tasks");
       })
       .finally(() => {
-        setLoading(false);
+        dispatch(setLoading(false));
       });
   };
 

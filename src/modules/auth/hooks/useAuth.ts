@@ -1,12 +1,10 @@
 import axios from "axios"
-import { LoadingContext } from "context/loading"
 import { postLogin, postSignin } from "helpers/auth"
-import { useContext } from "react"
 import { useAppDispatch } from "store"
 import { login as dispatchLogin } from 'store/authSlice';
+import { setLoading } from "store/loadingSlice";
 
 export const useAuth = () => {
-    const { setLoading } = useContext(LoadingContext)
     const dispatch = useAppDispatch()
     const login = ({ remember, token }: { remember: boolean, token: string }) => {
         if (remember) {
@@ -18,24 +16,24 @@ export const useAuth = () => {
         dispatch(dispatchLogin())
     }
     const startLogin = ({ email, password, remember }: { email: string, password: string, remember: boolean }) => {
-        setLoading(true)
+        dispatch(setLoading(true))
         postLogin({ email, password, })
             .then(({ token }) => {
                 login({ remember, token })
             })
             .finally(() => {
-                setLoading(false)
+                dispatch(setLoading(false))
             })
     }
 
     const startSignin = ({ email, password }: { email: string, password: string }) => {
-        setLoading(true)
+        dispatch(setLoading(true))
         postSignin({ email, password, })
             .then(({ token }) => {
                 login({ remember: false, token })
             })
             .finally(() => {
-                setLoading(false)
+                dispatch(setLoading(false))
             })
     }
     return { startLogin, startSignin, login }

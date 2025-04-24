@@ -1,12 +1,12 @@
-import { useContext } from "react";
-import { LoadingContext } from "context/loading";
 import { postTask } from "helpers/tasks";
 import { showModal } from "utils/modal";
 import * as Yup from "yup";
 import { requiredMsg } from "utils/form";
+import { setLoading } from "store/loadingSlice";
+import { useAppDispatch } from "store";
 
 export const useTaskAdd = () => {
-  const { setLoading } = useContext(LoadingContext);
+  const dispatch = useAppDispatch()
 
   const initialValues = {
     title: "",
@@ -22,14 +22,14 @@ export const useTaskAdd = () => {
 
   const onSubmit = async (values: any, { resetForm }: any) => {
     try {
-      setLoading(true);
+      dispatch(setLoading(true));
       await postTask(values);
       showModal({ title: "Task added", text: "Task added successfully", type: "success" });
       resetForm();
     } catch (error) {
       console.error("Failed to add task", error);
     } finally {
-      setLoading(false);
+      dispatch(setLoading(false));
     }
   };
 

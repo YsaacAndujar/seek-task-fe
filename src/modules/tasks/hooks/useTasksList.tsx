@@ -1,10 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import { GridColDef } from "@mui/x-data-grid";
 import { getTasks } from "helpers/tasks";
 import { ITask } from "interfaces/tasks";
-import { LoadingContext } from "context/loading";
-import { getStatusName } from "utils/tasks";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GridColDef } from "@mui/x-data-grid";
+import { useAppDispatch } from "store";
+import { setLoading } from "store/loadingSlice";
+import { getStatusName } from "utils/tasks";
 
 export const useTasksList = () => {
   const [tasks, setTasks] = useState<ITask[]>([]);
@@ -14,18 +15,19 @@ export const useTasksList = () => {
     total: 0
   });
 
-  const { setLoading } = useContext(LoadingContext);
+  const dispatch = useAppDispatch()
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    setLoading(true);
+    dispatch(setLoading(true));
     getTasks({ page: pagination.page, limit: pagination.limit })
       .then(({ data, pagination: { total } }) => {
         setTasks(data);
         setPagination((prev) => ({ ...prev, total }));
       })
       .finally(() => {
-        setLoading(false);
+        dispatch(setLoading(false));
       });
   }, [pagination.page, pagination.limit]);
 

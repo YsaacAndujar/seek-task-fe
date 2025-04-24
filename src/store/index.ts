@@ -4,7 +4,7 @@ import storage from 'redux-persist/lib/storage';
 import { combineReducers } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
 import authReducer from './authSlice'
-
+import loadingReducer from './loadingSlice'
 const persistConfig = {
     key: 'root',
     storage,
@@ -12,7 +12,8 @@ const persistConfig = {
 }
 
 const rootReducer = combineReducers({
-    auth: authReducer
+    auth: authReducer,
+    loading: loadingReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
