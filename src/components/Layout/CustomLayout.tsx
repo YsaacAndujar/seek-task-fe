@@ -1,14 +1,33 @@
 import { AppBar, Box, Button, Container, CssBaseline, Toolbar, Typography } from "@mui/material";
-import { ReactNode, useContext } from "react";
+import { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { AuthContext } from "context/auth";
+import { useAppDispatch } from "store";
+import { logout as logoutDispatch } from "store/authSlice";
+import Swal from "sweetalert2";
 
 interface CustomLayoutProps {
   children: ReactNode;
 }
 
 export const CustomLayout = ({ children }: CustomLayoutProps) => {
-  const { logOut } = useContext(AuthContext);
+  const dispatch = useAppDispatch()
+  const logout = () =>{
+    Swal.fire({
+      title: "Are you sure you want to log out?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, log out!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.clear();
+        sessionStorage.clear();
+        dispatch(logoutDispatch())
+      }
+    });
+    
+  }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -20,7 +39,7 @@ export const CustomLayout = ({ children }: CustomLayoutProps) => {
               Tasks
             </Button>
           </Typography>
-          <Button color="inherit" onClick={logOut}>
+          <Button color="inherit" onClick={logout}>
             Log Out
           </Button>
         </Toolbar>

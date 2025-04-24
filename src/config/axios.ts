@@ -1,4 +1,6 @@
 import axios from "axios";
+import { store } from "store";
+import { logout } from "store/authSlice";
 import { showModal } from "utils/modal";
 
 
@@ -6,6 +8,7 @@ const removeLogin = () =>{
   localStorage.clear();
   sessionStorage.clear();
   window.location.reload();
+  store.dispatch(logout());
 }
 
 export const setupAxios = (): void => {

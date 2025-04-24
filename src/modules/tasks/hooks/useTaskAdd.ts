@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { LoadingContext } from "context/loading";
 import { postTask } from "helpers/tasks";
-import { ITask } from "interfaces/tasks";
 import { showModal } from "utils/modal";
 import * as Yup from "yup";
 import { requiredMsg } from "utils/form";

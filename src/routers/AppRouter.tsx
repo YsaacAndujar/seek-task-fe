@@ -1,17 +1,16 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { useAppSelector } from "store";
 import { AuthRouter, OnlyPublicRoute, PrivateRoute, TasksRouter, } from "./index";
-import { useContext } from "react";
-import { AuthContext } from "context/auth";
 
 export const AppRouter = () => {
-  const { isLogged } = useContext(AuthContext)
+  const isLoggedIn = useAppSelector(state => state.auth.isLoggedIn)
   return (
     <Router>
       <Routes>
-        <Route element={<PrivateRoute isAuthenticated={isLogged} />}>
+        <Route element={<PrivateRoute isAuthenticated={isLoggedIn} />}>
           <Route path="/tasks/*" element={<TasksRouter />} />
         </Route>
-        <Route element={<OnlyPublicRoute isAuthenticated={isLogged} />}>
+        <Route element={<OnlyPublicRoute isAuthenticated={isLoggedIn} />}>
           <Route path="/auth/*" element={<AuthRouter />} />
         </Route>
         <Route path="*" element={<Navigate to="/tasks" />} />
