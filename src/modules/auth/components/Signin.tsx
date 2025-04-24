@@ -1,80 +1,117 @@
+import {
+  Box,
+  Button,
+  Grid,
+  TextField,
+  Typography,
+  Link as MuiLink
+} from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
-import { Button, Col, Form, Input, Row, Typography } from 'antd';
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
 import { useAuth } from "../hooks/useAuth";
-import { passwordMatchMsg, requiredMsg } from "utils/form";
-const { Title, Text, Link } = Typography;
+import { requiredMsg, passwordMatchMsg } from "utils/form";
 
 interface SigninProps {
-  onChangeLogin: Dispatch<SetStateAction<boolean>>
+  onChangeLogin: Dispatch<SetStateAction<boolean>>;
 }
 
-export const Signin = ({ onChangeLogin }:SigninProps) => {
-  const { startSignin } = useAuth()
+interface SigninForm {
+  email: string;
+  password: string;
+  confirm: string;
+}
+
+const validationSchema = Yup.object({
+  email: Yup.string().email("Please enter a valid email address").required(requiredMsg),
+  password: Yup.string().min(6, "Password must be at least 6 characters").required(requiredMsg),
+  confirm: Yup.string()
+    .oneOf([Yup.ref("password"), ""], passwordMatchMsg)
+    .required(requiredMsg)
+});
+
+export const Signin = ({ onChangeLogin }: SigninProps) => {
+  const { startSignin } = useAuth();
+
+  const initialValues: SigninForm = {
+    email: "",
+    password: "",
+    confirm: ""
+  };
+
+  const handleSubmit = (values: SigninForm) => {
+    const { email, password } = values;
+    startSignin({ email, password });
+  };
+
   return (
-    <>
-      <Title level={2}>Sigin</Title>
-      <Form
-        name="basic"
-        initialValues={{ remember: true }}
-        style={{ padding: '20px' }}
-        labelCol={{ span: 5, offset:0 }}
-        onFinish={({email, password}:{email:string, password:string})=> {
-          startSignin({email, password})
-        }}
+    <Box sx={{ maxWidth: 500, mx: "auto", mt: 4, p: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        Signin
+      </Typography>
+
+      <Formik
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        validationSchema={validationSchema}
       >
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[{ required: true, message: requiredMsg, }, {type: "email", message: "Please enter a valid email address"}]}
-        >
-          <Input />
-        </Form.Item>
+        {({ values, errors, touched, handleChange, handleBlur }) => (
+          <Form noValidate>
+            <TextField
+              label="Email"
+              name="email"
+              fullWidth
+              margin="normal"
+              value={values.email}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={touched.email && Boolean(errors.email)}
+              helperText={touched.email && errors.email}
+            />
 
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: requiredMsg }, {min: 6}]}
-        >
-          <Input.Password />
-        </Form.Item>
-        
-        <Form.Item
-          label="Confirm password"
-          name="confirm"
-          dependencies={['password']}
-          rules={[
-            { required: true, message: requiredMsg },
-            ({ getFieldValue }) => ({
-            validator(_, value) {
-              if (!value || getFieldValue('password') === value) {
-                return Promise.resolve();
-              }
-              return Promise.reject(new Error(passwordMatchMsg));
-            },
-          }),]}
-        >
-          <Input.Password />
-        </Form.Item>
+            <TextField
+              label="Password"
+              name="password"
+              type="password"
+              fullWidth
+              margin="normal"
+              value={values.password}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={touched.password && Boolean(errors.password)}
+              helperText={touched.password && errors.password}
+            />
 
-        <Row justify="end">
-          <Col>
-            <Form.Item>
-              <Text>
-                Do you already have an account? <Link onClick={() => { onChangeLogin(true) }}>Click here</Link>
-              </Text>
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row justify="end">
-          <Col>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" size="large">
-                Sigin
+            <TextField
+              label="Confirm Password"
+              name="confirm"
+              type="password"
+              fullWidth
+              margin="normal"
+              value={values.confirm}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={touched.confirm && Boolean(errors.confirm)}
+              helperText={touched.confirm && errors.confirm}
+            />
+
+            <Grid container justifyContent="flex-end" sx={{ mt: 1, mb: 2 }}>
+              <Typography variant="body2">
+                Already have an account?{" "}
+                <MuiLink component="button" onClick={() => onChangeLogin(true)}>
+                  Click here
+                </MuiLink>
+              </Typography>
+            </Grid>
+
+            <Grid container justifyContent="flex-end">
+              <Button type="submit" variant="contained" size="large">
+                Signin
               </Button>
-            </Form.Item>
-          </Col>
-        </Row>
-      </Form>
-    </>
-  )
-}
+            </Grid>
+          </Form>
+        )}
+      </Formik>
+    </Box>
+  );
+};

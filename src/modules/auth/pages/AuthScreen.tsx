@@ -1,29 +1,37 @@
-import { Layout, theme } from "antd"
-import { Content } from "antd/es/layout/layout"
-import { useState } from "react"
-import { contentStyle, divContainerStyle, layoutStyle } from "../styles/layoutStyles"
-import { Login, Signin } from "../components"
+import { Box, Container, Paper } from "@mui/material";
+import { useState } from "react";
+import { Login } from "../components/Login";
+import { Signin } from "../components/Signin";
 
 export const AuthScreen = () => {
-  const [isLogin, setIsLogin] = useState(true)
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
+  const [isLogin, setIsLogin] = useState(true);
+
   return (
-    <Layout style={layoutStyle}>
-      <Content style={contentStyle}>
-        <div
-          style={{
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-            ...divContainerStyle
+    <Box
+      sx={{
+        minHeight: "100vh",
+        backgroundColor: "#f5f5f5",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      <Container maxWidth="sm">
+        <Paper
+          elevation={3}
+          sx={{
+            borderRadius: 3,
+            padding: 4,
+            backgroundColor: "background.paper"
           }}
         >
-          {
-            isLogin? <Login onChangeLogin={setIsLogin} /> : <Signin onChangeLogin={setIsLogin} />
-          }
-        </div>
-      </Content>
-    </Layout>
-  )
-}
+          {isLogin ? (
+            <Login onChangeLogin={setIsLogin} />
+          ) : (
+            <Signin onChangeLogin={setIsLogin} />
+          )}
+        </Paper>
+      </Container>
+    </Box>
+  );
+};
